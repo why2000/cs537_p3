@@ -16,7 +16,8 @@
 ## Usage
 
 * ./537make [-f \<makefile\>] [target]
-* IO redirections in makefile are allowed
+* ./537make [target] [-f \<makefile\>]
+* IO redirections in makefile commands are allowed
 
 ## Brief Summary
 
