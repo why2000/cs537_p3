@@ -5,9 +5,11 @@
 #ifndef CS537_P3_STRPROCESS_H
 #define CS537_P3_STRPROCESS_H
 #include "cmdLine.h"
+#include "graph.h"
 
-int parseTarget(const char* line);
+
+Vertex* parseTarget(const char* line, Graph* graph, int lineNum);
 int parseCmd(Cmd* cmd);
-int readItem(char* target, const char* rawStr, int* begin, int strict);
+void readItem(char* target, const char* rawStr, int* begin);
 
 #endif //CS537_P3_STRPROCESS_H

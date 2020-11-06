@@ -3,25 +3,55 @@
 //
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "strProcess.h"
 
-
-int parseTarget(const char* const line){
-
+/**
+ * Parse a string into Vertices and Edges of items
+ * @param line the string to parse
+ * @param graph the graph to set the vertex and edge
+ * @param lineNum the index of this line
+ * @return the point to first (target) Vertex that is parsed
+ */
+Vertex* parseTarget(const char* const line, Graph* graph, int lineNum){
     char tgtName[MAX_LINE];
-    char bufDep[MAX_LINE];
-    const int cmdFlag = (line[0] == '\t');
     int i;
+    // read target
     for(i = 0; i < MAX_LINE; i++){
-        if (bufLine[i] == ':') {
+        // jump
+        while(line[i] == ' '||line[i] == '\t')
+            i++;
+        if(i > 0 && line[i] != '\n' && line[i] != '\0') {
+            fprintf(stderr, "%d: Unable to parse target: %s\n", lineNum, line);
+            exit(1);
+        }
+        if (line[i] == ':') {
             tgtName[i] = '\0';
             break;
         }
-        tgtName[i] = bufLine[i];
+        tgtName[i] = line[i];
     }
+    if(tgtName[0] == '\0' || i == MAX_LINE){
+        fprintf(stderr, "%d: Unable to parse target: %s\n", lineNum, line);
+        exit(1);
+    }
+    Vertex* target;
+    if((target = findVertexFromName(tgtName, graph)) == NULL){
+        target = (Vertex*)malloc(sizeof(Vertex));
+        snprintf(target->name, MAX_LINE, "%s", tgtName);
+    }
+    addVertex(target, graph);
+    // read dependencies
     while(i < MAX_LINE){
-        readItem()
+        char bufDep[MAX_LINE];
+        readItem(bufDep, line, &i);
+        Vertex* vet = (Vertex*)malloc(sizeof(Vertex));
+        snprintf(vet->name, MAX_LINE, "%s", bufDep);
+        addVertex(vet, graph);
+        addEdge(target, vet, graph);
     }
+    return target;
+
 }
 
 
@@ -33,33 +63,36 @@ int parseTarget(const char* const line){
 int parseCmd(Cmd* const cmd){
     if(cmd->rawStr[0] == '\0' || cmd->rawStr[0] == '#')
         return 0;
-    for(int i = 0; i < MAX_LINE; i++){
+    int i = 0;
+    while(i < MAX_LINE){
         char ch = cmd->rawStr[i];
-        // jump spaces
-        if(ch==' '||ch=='\n'||ch=='\t')
-            continue;
-        switch(ch){
-            // redirection
-            case '>':
-                i++;
-                readItem(cmd->outFile, cmd->rawStr, &i);
-                cmd->outRed = 1;
-                break;
-            case '<':
-                i++;
-                readItem(cmd->inFile, cmd->rawStr, &i);
-                cmd->inRed = 1;
-                break;
-                // normal args
-            default:
-                cmd->argv[cmd->argc] = (char*)malloc(sizeof(char)*MAX_LINE);
-                // non-strict mode, as \0 is already checkeda
-                readItem(cmd->argv[cmd->argc], cmd->rawStr, &i, 0);
-                cmd->argc++;
-                break;
-        }
-        if(cmd->rawStr[i] == '\0')
+        if(ch == '\0'||ch=='\n')
             return cmd->argc;
+        // jump spaces
+        if(ch==' '||ch=='\t'){
+            i++;
+            continue;
+        }
+        // redirection
+        if(ch == '>'){
+            i++;
+            // non-strict mode, as \0 is already checked
+            readItem(cmd->outFile, cmd->rawStr, &i);
+            cmd->outRed = 1;
+            break;
+        }
+        else if(ch == '<') {
+            i++;
+            readItem(cmd->inFile, cmd->rawStr, &i);
+            cmd->inRed = 1;
+            break;
+        }
+        else {
+            // normal args
+            cmd->argv[cmd->argc] = (char*) malloc(sizeof(char) * MAX_LINE);
+            readItem(cmd->argv[cmd->argc], cmd->rawStr, &i);
+            cmd->argc++;
+        }
     }
     return cmd->argc;
 }
@@ -69,25 +102,24 @@ int parseCmd(Cmd* const cmd){
  * @param target: the buffer to store the item
  * @param rawStr: the long string to be parsed
  * @param pos: the start position
- * @param strict: non zero value turns on strict mode -- return non-zero if reaches '\0' while reading
- * @return 0 if read succeeded, otherwise failed
  */
-int readItem(char* const target, const char* const rawStr, int* pos, int strict){
+void readItem(char* const target, const char* const rawStr, int* pos){
     int i = *pos;
     // do a left strip
-    while(rawStr[i] == ' ' && i < MAX_LINE-1)
+    while((rawStr[i] == ' ' || rawStr[i] == '\t') && i < MAX_LINE-1)
         i++;
     *pos = i;
     // copy item
     for(int j = 0; *pos < MAX_LINE; j++,(*pos)++){
-        if(rawStr[*pos] == '\0' && strict){
-            return 1;
-        }
-        if(*pos == MAX_LINE - 1 || rawStr[*pos] == ' ' || rawStr[*pos] == '\t'){
+//        if(rawStr[*pos] == '\0' && strict){
+//            return 1;
+//        }
+        if(*pos == MAX_LINE - 1 || rawStr[*pos] == ' '
+            || rawStr[*pos] == '\t' || rawStr[*pos] == '\0' || rawStr[*pos] == '\n'){
             target[j] = '\0';
             break;
         }
         target[j] = rawStr[*pos];
     }
-    return 0;
+//    return 0;
 }

@@ -14,6 +14,7 @@ typedef struct Cmd {
     char rawStr[MAX_LINE];
     char inFile[MAX_LINE], outFile[MAX_LINE];
     char errMsg[MAX_LINE];
+    struct Cmd* next;
 } Cmd;
 
 
