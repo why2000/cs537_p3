@@ -10,11 +10,13 @@
 // We don't necessarily implement the whole graph, in fact, we don't have to remove any vertices/edges
 
 typedef struct Vertex{
-    int cmdNum;
     int adjNum;
+    int HNum;
     char name[MAX_LINE];
     Cmd* cmdHead;
     Cmd* cmdLines;
+    bool visited;
+    int size = MAX_LINE;
     struct Vertex** adj;
     struct Vertex* next;
 } Vertex;
@@ -22,13 +24,14 @@ typedef struct Vertex{
 
 typedef struct Graph{
     int nVertices;
+    int size = MAX_LINE;
     Vertex** vertices;
 } Graph;
 
 Vertex* findVertexFromName(char* name, Graph* graph);
 void addVertex(Vertex* vertex, Graph* graph);
 void addEdge(Vertex* source, Vertex* target, Graph* graph);
-Vertex** getAdjacentVerticesOf(char* name, Graph* graph);
+//Vertex** getAdjacentVerticesOf(char* name, Graph* graph);
 Vertex* postTranversal(Vertex* vertex, Graph* graph);
 void freeGraph(Graph* graph);
 
