@@ -1,11 +1,15 @@
 //
 // Created by hanyuan on 11/4/20.
+// Hanyuan Wu/ Zhihao Shu
 //
 
 #include <stdlib.h>
 #include "strProcess.h"
 
 
+/**
+ parse the target line into the buffer line
+ */
 int parseTarget(const char* const line){
 
     char tgtName[MAX_LINE];

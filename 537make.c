@@ -1,5 +1,6 @@
 //
 // Created by hanyuan on 11/3/20.
+// Hanyuan Wu/ Zhihao Shu
 //
 
 #include <stdio.h>
@@ -8,7 +9,11 @@
 #include "makeParser.h"
 #include "cmdLine.h"
 #include "graph.h"
-
+/**
+ The main function that trigger the program and read in arguments
+ param: int argc, char** argv
+ return 0
+ */
 int main(int argc, char** argv) {
     char makeFile[MAX_LINE];
     char target[MAX_LINE];
