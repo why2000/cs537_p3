@@ -37,7 +37,6 @@ typedef struct Graph{
 Vertex* findVertexFromName(const char* name, Graph* graph);
 void addVertex(Vertex* vertex, Graph* graph);
 void addEdge(Vertex* source, Vertex* target);
-void freeGraph(Graph* graph);
 void checkCycle(Graph* graph);
 
 

@@ -122,9 +122,8 @@ void makeParse(FILE* fp, char* tgtName, Graph* graph){
             if(dftTgt[0] == '\0'){
                 snprintf(dftTgt, MAX_LINE, "%s", curVet->name);
             }
-
         }
-            // cmd line
+        // cmd line
         else{
             if(curVet == NULL){
                 fprintf(stderr, "%d: cmd without a target: %s\n", lineNum, bufLine);

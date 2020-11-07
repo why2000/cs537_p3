@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
 #include "graph.h"
 
 Vertex* findVertexFromName(const char* name, Graph* graph){
@@ -76,21 +77,51 @@ int contains(Vertex* src, Vertex* target){
     return 0;
 }
 
+/**
+ * Private, recursive helper for cycle checking
+ * @param curVet the current vertex being checked
+ * @param visiting indicate whether to visit, or unvisit the vertex
+ */
+void cycleHelperRec(Vertex* curVet, int visiting){
+    if(curVet->visited == visiting){
+        fprintf(stderr, "%d: Cycle detected in makefile: %s\n",
+                curVet->lineNum, curVet->fromLine);
+        exit(1);
+    }
+    curVet->visited = visiting;
+    for(int i = 0; i < curVet->adjNum; i++){
+        cycleHelperRec(curVet->adj[i], visiting);
+    }
+
+}
 
 /**
  * Check if any cycle in the graph, if so, exit the program immediately
  * @param graph the graph to be checked
  */
 void checkCycle(Graph* graph){
-    Vertex** rootList = (Vertex**)malloc(sizeof(Vertex*)*)
+    int j = 0;
+    Vertex** rootList = (Vertex**)malloc(sizeof(Vertex*)*graph->nVertices);
     for(int i = 0; i < graph->nVertices; i++){
-        if()
+        if(graph->vertices[i]->hasEdgeIn == 0){
+            rootList[j] = graph->vertices[i];
+            j++;
+        }
+    }
+    if(j == 0 && graph->nVertices != 0){
+        fprintf(stderr, "%d: Cycle detected in makefile: %s\n",
+                graph->vertices[0]->lineNum, graph->vertices[0]->fromLine);
+        exit(1);
+    }
+    for(int i = 0; i < j; i++){
+        cycleHelperRec(rootList[i], 1);
+        cycleHelperRec(rootList[i], 0);
     }
 }
 
-void freeGraph(Graph* graph){
 
-}
+
+
 
 
 
