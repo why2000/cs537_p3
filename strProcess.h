@@ -1,6 +1,7 @@
 //
-// Created by hanyuan on 11/4/20.
-//
+// Created by hanyuan on 11/3/20.
+// Team member: Hanyuan Wu, Zhihao Shu
+
 
 #ifndef CS537_P3_STRPROCESS_H
 #define CS537_P3_STRPROCESS_H

@@ -1,6 +1,7 @@
 //
-// Created by hanyuan on 11/4/20.
-//
+// Created by hanyuan on 11/3/20.
+// Team member: Hanyuan Wu, Zhihao Shu
+
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -15,18 +16,29 @@
  */
 Vertex* parseTarget(const char* const line, Graph* graph, int lineNum){
     char tgtName[MAX_LINE];
-    int i;
+    while(line[0] == ' '||line[0] == '\t'){
+        fprintf(stderr, "%d: Space at the beginning of line: %s\n", lineNum, line);
+        exit(1);
+    }
+    int i = 0;
     // read target
-    for(i = 0; i < MAX_LINE; i++){
+    for(; i < MAX_LINE; i++){
         // jump
-        while(line[i] == ' '||line[i] == '\t')
-            i++;
-        if(i > 0 && line[i] != '\n' && line[i] != '\0') {
-            fprintf(stderr, "%d: Unable to parse target: %s\n", lineNum, line);
-            exit(1);
-        }
         if (line[i] == ':') {
             tgtName[i] = '\0';
+            i++;
+            break;
+        }
+        if(line[i] == ' ' || line[i] == '\t'){
+            tgtName[i] = '\0';
+            while(line[i] != ':'){
+                if(i == MAX_LINE || line[i] == '\n'){
+                    fprintf(stderr, "%d: Unable to parse target: %s\n", lineNum, line);
+                    exit(1);
+                }
+                i++;
+            }
+            i++;
             break;
         }
         tgtName[i] = line[i];
@@ -39,16 +51,27 @@ Vertex* parseTarget(const char* const line, Graph* graph, int lineNum){
     if((target = findVertexFromName(tgtName, graph)) == NULL){
         target = (Vertex*)malloc(sizeof(Vertex));
         snprintf(target->name, MAX_LINE, "%s", tgtName);
+        addVertex(target, graph);
     }
-    addVertex(target, graph);
+    target->isTarget = 1;
+    target->lineNum = lineNum;
+    snprintf(target->fromLine, MAX_LINE, "%s", line);
     // read dependencies
     while(i < MAX_LINE){
+        if(line[i] == '\0'||line[i] == '\n')
+            break;
         char bufDep[MAX_LINE];
         readItem(bufDep, line, &i);
-        Vertex* vet = (Vertex*)malloc(sizeof(Vertex));
-        snprintf(vet->name, MAX_LINE, "%s", bufDep);
-        addVertex(vet, graph);
-        addEdge(target, vet, graph);
+        if(bufDep[0] == '\0') break;
+        Vertex* vet;
+        if((vet = findVertexFromName(bufDep, graph)) == NULL){
+            vet = (Vertex*)malloc(sizeof(Vertex));
+            vet->isTarget = 0;
+            snprintf(vet->name, MAX_LINE, "%s", bufDep);
+            addVertex(vet, graph);
+        }
+        addEdge(target, vet);
+
     }
     return target;
 
@@ -74,25 +97,27 @@ int parseCmd(Cmd* const cmd){
             continue;
         }
         // redirection
-        if(ch == '>'){
+        if(ch == '>' && cmd->outRed == 0){
             i++;
             // non-strict mode, as \0 is already checked
             readItem(cmd->outFile, cmd->rawStr, &i);
             cmd->outRed = 1;
-            break;
         }
-        else if(ch == '<') {
+        else if(ch == '<' && cmd->inRed == 0) {
             i++;
             readItem(cmd->inFile, cmd->rawStr, &i);
             cmd->inRed = 1;
-            break;
         }
         else {
+            // no more args
+            if(cmd->inRed != 0 || cmd->outRed != 0) break;
             // normal args
             cmd->argv[cmd->argc] = (char*) malloc(sizeof(char) * MAX_LINE);
             readItem(cmd->argv[cmd->argc], cmd->rawStr, &i);
+            if(cmd->argv[cmd->argc][0] == '\0') break;
             cmd->argc++;
         }
+        if(cmd->inRed != 0 && cmd->outRed != 0) break;
     }
     return cmd->argc;
 }
@@ -111,9 +136,6 @@ void readItem(char* const target, const char* const rawStr, int* pos){
     *pos = i;
     // copy item
     for(int j = 0; *pos < MAX_LINE; j++,(*pos)++){
-//        if(rawStr[*pos] == '\0' && strict){
-//            return 1;
-//        }
         if(*pos == MAX_LINE - 1 || rawStr[*pos] == ' '
             || rawStr[*pos] == '\t' || rawStr[*pos] == '\0' || rawStr[*pos] == '\n'){
             target[j] = '\0';

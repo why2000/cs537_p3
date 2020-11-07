@@ -2,3 +2,4 @@
 /.idea/
 *.o
 CMakeLists.txt
+/test/

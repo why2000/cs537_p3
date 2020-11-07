@@ -28,3 +28,4 @@
 * Use -f \<makefile\> to specify the name of makefile other than default names. Default names are `makefile` (first priority) and `Makefile`.
 * By running without specfying [target], it will make the first target build in makefile
 * IO redirections are allowed in command lines within the makefile, using `<` and `>`.
+* can check and report cycle (infinite dependent loop) in makefile

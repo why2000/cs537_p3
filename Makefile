@@ -4,8 +4,8 @@ WARNING_FLAGS = -Wall -Wextra
 EXE = 537make
 SCAN_BUILD_DIR = scan-build-out
 
-537make: 537make.o
-	$(CC) -o $(EXE) prodcom.o reader.o munch1.o munch2.o writer.o queue.o statistic.o
+537make: 537make.o cmdLine.o graph.o makeParser.o strProcess.o
+	$(CC) -o $(EXE) 537make.o cmdLine.o graph.o makeParser.o strProcess.o
 
 
 537make.o: 537make.c 537make.h
@@ -13,15 +13,18 @@ SCAN_BUILD_DIR = scan-build-out
 
 
 cmdLine.o: cmdLine.c cmdLine.h
-    $(CC) $(WARNING_FLAGS) -c cmdLine.c
+	$(CC) $(WARNING_FLAGS) -c cmdLine.c
 
 
 graph.o: graph.c graph.h
-    $(CC) $(WARNING_FLAGS) -c graph.c
+	$(CC) $(WARNING_FLAGS) -c graph.c
 
 
 makeParser.o: makeParser.c makeParser.h
-    $(CC) $(WARNING_FLAGS) -c makeParser.c
+	$(CC) $(WARNING_FLAGS) -c makeParser.c
+
+strProcess.o: strProcess.c strProcess.h
+	$(CC) $(WARNING_FLAGS) -c strProcess.c
 
 clean:
 	rm -f $(EXE) *.o

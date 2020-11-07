@@ -1,6 +1,7 @@
 //
 // Created by hanyuan on 11/3/20.
-//
+// Team member: Hanyuan Wu, Zhihao Shu
+
 
 #ifndef CS537_P3_GRAPH_H
 #define CS537_P3_GRAPH_H
@@ -10,8 +11,15 @@
 // We don't necessarily implement the whole graph, in fact, we don't have to remove any vertices/edges
 
 typedef struct Vertex{
-    int cmdNum;
+    int hasEdgeIn;
+    int isTarget;
     int adjNum;
+    int lineNum;
+    int updated;
+    int visited;
+    int size;
+    long time;
+    char fromLine[MAX_LINE];
     char name[MAX_LINE];
     Cmd* cmdHead;
     Cmd* cmdLines;
@@ -22,16 +30,15 @@ typedef struct Vertex{
 
 typedef struct Graph{
     int nVertices;
+    int size;
     Vertex** vertices;
 } Graph;
 
-Vertex* findVertexFromName(char* name, Graph* graph);
+Vertex* findVertexFromName(const char* name, Graph* graph);
 void addVertex(Vertex* vertex, Graph* graph);
-void addEdge(Vertex* source, Vertex* target, Graph* graph);
-Vertex** getAdjacentVerticesOf(char* name, Graph* graph);
-Vertex* postTranversal(Vertex* vertex, Graph* graph);
+void addEdge(Vertex* source, Vertex* target);
 void freeGraph(Graph* graph);
-
+void checkCycle(Graph* graph);
 
 
 

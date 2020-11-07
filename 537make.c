@@ -1,6 +1,7 @@
 //
 // Created by hanyuan on 11/3/20.
-//
+// Team member: Hanyuan Wu, Zhihao Shu
+
 
 #include <stdio.h>
 #include <string.h>
@@ -12,32 +13,31 @@
 int main(int argc, char** argv) {
     char makeFile[MAX_LINE];
     char target[MAX_LINE];
+    target[0] = '\0';
+    makeFile[0] = '\0';
     const int MAX_ARG = 4;
     if(argc > MAX_ARG){
         printf("Usage: 537make [-f <makefile>] [target]");
         return 1;
     }
     // very few args, no need to use getopt
+
     for(int i = 1; i < argc; i++){
-        if((strncmp("-f", argv[i], MAX_LINE) == 0)){
+        if((strncmp("-f", argv[i], MAX_LINE) == 0) && makeFile[0] == '\0'){
             if(i == argc-1){
                 printf("Usage: 537make [-f <makefile>] [target]");
                 return 1;
             }
-            else if(i == argc-2){
-                target[0] = '\0';
-                snprintf(makeFile, MAX_LINE, "%s", argv[i+1]);
-                if(argc == MAX_ARG)
-                    snprintf(target, MAX_LINE, "%s", argv[i-1]);
+            else{
+                snprintf(makeFile, MAX_LINE, "%s", argv[++i]);
             }
-            else if(i == argc-3){
-                snprintf(makeFile, MAX_LINE, "%s", argv[i+1]);
-                snprintf(target, MAX_LINE, "%s", argv[i+2]);
-            }
-            break;
+        }
+        else if(target[0] == '\0'){
+            snprintf(target, MAX_LINE, "%s", argv[i]);
         }
     }
     makeInit(makeFile, target);
-
+    // As all the memories are needed till the whole make process ends (we have no "remove" actions for graph)
+    // there is no "free" for our graph, any heap memory in it will only be freed when the whole program ends
     return 0;
 }
