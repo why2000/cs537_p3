@@ -36,10 +36,13 @@ void makeInit(const char* const makeFile, char* const target){
             }
         }
     }
+    // check null byte
     checkNull(fp);
     rewind(fp);
+    // parsing makefile
     makeParse(fp, target, graph);
-
+    // As all the memories allocated are needed till the whole make process ends (we have no "remove" actions for graph)
+    // there is no "free" for our graph, any heap memory in it will only be freed when the whole program ends
 }
 
 
@@ -158,6 +161,7 @@ void makeParse(FILE* fp, char* tgtName, Graph* graph){
         exit(1);
     }
     checkCycle(graph);
+    // begin make
     make(tgtVertex, graph);
 }
 

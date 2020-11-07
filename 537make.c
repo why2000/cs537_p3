@@ -37,7 +37,5 @@ int main(int argc, char** argv) {
         }
     }
     makeInit(makeFile, target);
-    // As all the memories allocated are needed till the whole make process ends (we have no "remove" actions for graph)
-    // there is no "free" for our graph, any heap memory in it will only be freed when the whole program ends
     return 0;
 }

@@ -28,7 +28,7 @@ void cmdExec(Cmd* const cmd){
         }
     }
     else{
-        // redirections
+        // redirect in
         if(cmd->inRed){
             int inStream;
             if((inStream = open(cmd->inFile, O_RDONLY)) == -1) {
@@ -43,10 +43,11 @@ void cmdExec(Cmd* const cmd){
             }
             close(inStream);
         }
+        // redirect out
         if(cmd->outRed){
             int outStream;
             if((outStream = open(cmd->outFile,
-                                 O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IRGRP | S_IWGRP | S_IWUSR))==-1) {
+                                 O_WRONLY|O_TRUNC|O_CREAT, S_IRUSR|S_IRGRP|S_IWGRP|S_IWUSR))==-1) {
                 fprintf(stderr,
                         "%d: Unable to open redirect file %s: %s", cmd->lineNum, cmd->outFile, cmd->rawStr);
                 exit(1);

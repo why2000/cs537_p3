@@ -7,17 +7,27 @@
 #include <stdio.h>
 #include "graph.h"
 
+/**
+ * Simply find a vertex in graph by its name
+ * @param name the vertex name (usually a target name or file name)
+ * @param graph the graph to search
+ * @return the vertex found, NULL if not found
+ */
 Vertex* findVertexFromName(const char* name, Graph* graph){
     for(int i=0; i<graph->nVertices;i++){
         if(strncmp(graph->vertices[i]->name, name, MAX_LINE) == 0){
             return graph->vertices[i];
         }
     }
-    //stderr("cannot find the vertex");
     return NULL;
 }
 
-//adding a vertex to the graph and incrementing the number of vertex
+/**
+ * Adding a vertex to the graph and incrementing the number of vertex
+ * @param vertex the vertex to be added
+ * @param graph the graph to add vertex into
+ */
+
 void addVertex(Vertex* vertex, Graph* graph){
     //check duplicate
     for(int i=0; i<graph->nVertices; i++){
@@ -47,7 +57,11 @@ void addVertex(Vertex* vertex, Graph* graph){
     vertex->hasEdgeIn = 0;
 }
 
-
+/**
+ * add an edge from source to target, using the adjacent array in vertex
+ * @param source from this vertex
+ * @param target to this vertex
+ */
 void addEdge(Vertex* source, Vertex* target){
 
     //initialize vertex adj and add the first edge
@@ -80,18 +94,19 @@ int contains(Vertex* src, Vertex* target){
 /**
  * Private, recursive helper for cycle checking
  * @param curVet the current vertex being checked
- * @param visiting indicate whether to visit, or unvisit the vertex
  */
-void cycleHelperRec(Vertex* curVet, int visiting){
-    if(curVet->visited == visiting){
+void cycleHelperRec(Vertex* curVet){
+    if(curVet->visited == 1){
         fprintf(stderr, "%d: Cycle detected in makefile: %s\n",
                 curVet->lineNum, curVet->fromLine);
         exit(1);
     }
-    curVet->visited = visiting;
+    if(curVet->visited == 2) return;
+    curVet->visited = 1;
     for(int i = 0; i < curVet->adjNum; i++){
-        cycleHelperRec(curVet->adj[i], visiting);
+        cycleHelperRec(curVet->adj[i]);
     }
+    curVet->visited = 2;
 
 }
 
@@ -114,9 +129,10 @@ void checkCycle(Graph* graph){
         exit(1);
     }
     for(int i = 0; i < j; i++){
-        cycleHelperRec(rootList[i], 1);
-        cycleHelperRec(rootList[i], 0);
+        cycleHelperRec(rootList[i]);
     }
+    free(rootList);
+    rootList = NULL;
 }
 
 

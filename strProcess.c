@@ -47,6 +47,7 @@ Vertex* parseTarget(const char* const line, Graph* graph, int lineNum){
         fprintf(stderr, "%d: Unable to parse target: %s\n", lineNum, line);
         exit(1);
     }
+    // graph actions
     Vertex* target;
     if((target = findVertexFromName(tgtName, graph)) == NULL){
         target = (Vertex*)malloc(sizeof(Vertex));
@@ -56,6 +57,7 @@ Vertex* parseTarget(const char* const line, Graph* graph, int lineNum){
     target->isTarget = 1;
     target->lineNum = lineNum;
     snprintf(target->fromLine, MAX_LINE, "%s", line);
+
     // read dependencies
     while(i < MAX_LINE){
         if(line[i] == '\0'||line[i] == '\n')
@@ -135,7 +137,7 @@ void readItem(char* const target, const char* const rawStr, int* pos){
         i++;
     *pos = i;
     // copy item
-    for(int j = 0; *pos < MAX_LINE; j++,(*pos)++){
+    for(int j = 0; j < MAX_LINE - i; j++,(*pos)++){
         if(*pos == MAX_LINE - 1 || rawStr[*pos] == ' '
             || rawStr[*pos] == '\t' || rawStr[*pos] == '\0' || rawStr[*pos] == '\n'){
             target[j] = '\0';
