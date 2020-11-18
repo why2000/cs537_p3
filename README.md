@@ -1,5 +1,11 @@
 # CS537 P3 (537make)
 
+## Claiming:
+
+* **This project repo will be make public only AFTER the assignment is due**
+
+## Grade: 13/10
+
 ## Author:
 
 |Name|CSlogin|NetID|
